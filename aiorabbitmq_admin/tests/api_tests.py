@@ -112,14 +112,10 @@ class AdminAPITests(AioHTTPTestCase):
         )
 
     @unittest_run_loop
-    @unittest.skip
     async def test_get_node(self):
-        resp = await self.api.get_cluster_name()
-        node_name = resp['name'].split('@')[0]
-
-        response = await self.api.get_node(node_name)
+        response = await self.api.get_node(self.node_name)
         self.assertIsInstance(response, dict)
-        self.assertEqual(response['name'], node_name)
+        self.assertEqual(response['name'], self.node_name)
 
     @unittest_run_loop
     async def test_list_extensions(self):
@@ -146,6 +142,8 @@ class AdminAPITests(AioHTTPTestCase):
     @unittest_run_loop
     async def test_get_connection(self):
         resp = await self.api.list_connections()
+        if len(resp) == 0:
+            return
         cname = resp[0].get('name')
         self.assertIsInstance(
             await self.api.get_connection(cname),
@@ -165,6 +163,8 @@ class AdminAPITests(AioHTTPTestCase):
     @unittest_run_loop
     async def test_list_connection_channels(self):
         resp = await self.api.list_connections()
+        if len(resp) == 0:
+            return
         cname = resp[0].get('name')
 
         response = await self.api.list_connection_channels(cname)
@@ -181,6 +181,8 @@ class AdminAPITests(AioHTTPTestCase):
     @unittest_run_loop
     async def test_get_channel(self):
         resp = await self.api.list_channels()
+        if len(resp) == 0:
+            return
         cname = resp[0].get('name')
 
         self.assertIsInstance(
