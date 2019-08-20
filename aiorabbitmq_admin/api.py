@@ -36,12 +36,11 @@ class AdminAPI(Resource):
         memory use (may be expensive if there are many small binaries in the
         system).
         """
-        print('/api/nodes/{0}'.format(urllib.parse.quote(name)))
         return await self._api_get(
             url='/api/nodes/{0}'.format(urllib.parse.quote(name)),
             params=dict(
-                binary=binary,
-                memory=memory,
+                binary=str(binary),
+                memory=str(memory),
             ),
         )
 
