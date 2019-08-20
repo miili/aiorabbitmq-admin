@@ -25,7 +25,7 @@ class Resource(object):
         :type auth: Requests auth
 
         .. _Requests' authentication: https://docs.aiohttp.org/en/stable/client_reference.html#aiohttp.BasicAuth
-        """
+        """  # noqa
         self.url = url.rstrip('/')
         if isinstance(auth, tuple):
             auth = aiohttp.BasicAuth(*auth)

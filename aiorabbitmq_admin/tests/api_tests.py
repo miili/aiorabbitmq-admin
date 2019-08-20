@@ -1,4 +1,3 @@
-import unittest
 import os
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 
@@ -403,7 +402,6 @@ class AdminAPITests(AioHTTPTestCase):
         uname = 'test_user'
         vname = 'test_vhost'
         password_hash = '5f4dcc3b5aa765d61d8327deb882cf99'  # md5 of 'password'
-
 
         # Create test user/vhost
         await self.api.create_user(uname, password='', password_hash=password_hash)
