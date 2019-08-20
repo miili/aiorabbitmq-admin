@@ -1,5 +1,5 @@
-from rabbitmq_admin.base import Resource
-from six.moves import urllib
+from aiorabbitmq_admin.base import Resource
+import urllib
 
 
 class AdminAPI(Resource):
@@ -7,50 +7,51 @@ class AdminAPI(Resource):
     The entrypoint for interacting with the RabbitMQ Management HTTP API
     """
 
-    def overview(self):
+    async def overview(self):
         """
         Various random bits of information that describe the whole system
         """
-        return self._api_get('/api/overview')
+        return await self._api_get('/api/overview')
 
-    def get_cluster_name(self):
+    async def get_cluster_name(self):
         """
         Name identifying this RabbitMQ cluster.
         """
-        return self._get(
+        return await self._get(
             url=self.url + '/api/cluster-name',
             headers=self.headers,
             auth=self.auth
         )
 
-    def list_nodes(self):
+    async def list_nodes(self):
         """
         A list of nodes in the RabbitMQ cluster.
         """
-        return self._api_get('/api/nodes')
+        return await self._api_get('/api/nodes')
 
-    def get_node(self, name, memory=False, binary=False):
+    async def get_node(self, name, memory=False, binary=False):
         """
         An individual node in the RabbitMQ cluster. Set "memory=true" to get
         memory statistics, and "binary=true" to get a breakdown of binary
         memory use (may be expensive if there are many small binaries in the
         system).
         """
-        return self._api_get(
-            url='/api/nodes/{0}'.format(name),
+        print('/api/nodes/{0}'.format(urllib.parse.quote(name)))
+        return await self._api_get(
+            url='/api/nodes/{0}'.format(urllib.parse.quote(name)),
             params=dict(
                 binary=binary,
                 memory=memory,
             ),
         )
 
-    def list_extensions(self):
+    async def list_extensions(self):
         """
         A list of extensions to the management plugin.
         """
-        return self._api_get('/api/extensions')
+        return await self._api_get('/api/extensions')
 
-    def get_definitions(self):
+    async def get_definitions(self):
         """
         The server definitions - exchanges, queues, bindings, users, virtual
         hosts, permissions and parameters. Everything apart from messages.
@@ -58,9 +59,9 @@ class AdminAPI(Resource):
         This method can be used for backing up the configuration of a server
         or cluster.
         """
-        return self._api_get('/api/definitions')
+        return await self._api_get('/api/definitions')
 
-    def post_definitions(self, data):
+    async def post_definitions(self, data):
         """
         The server definitions - exchanges, queues, bindings, users, virtual
         hosts, permissions and parameters. Everything apart from messages.
@@ -82,26 +83,26 @@ class AdminAPI(Resource):
         :param data: The definitions for a RabbitMQ server
         :type data: dict
         """
-        self._api_post('/api/definitions', data=data)
+        await self._api_post('/api/definitions', data=data)
 
-    def list_connections(self):
+    async def list_connections(self):
         """
         A list of all open connections.
         """
-        return self._api_get('/api/connections')
+        return await self._api_get('/api/connections')
 
-    def get_connection(self, name):
+    async def get_connection(self, name):
         """
         An individual connection.
 
         :param name: The connection name
         :type name: str
         """
-        return self._api_get('/api/connections/{0}'.format(
-            urllib.parse.quote_plus(name)
+        return await self._api_get('/api/connections/{0}'.format(
+            urllib.parse.quote(name)
         ))
 
-    def delete_connection(self, name, reason=None):
+    async def delete_connection(self, name, reason=None):
         """
         Closes an individual connection. Give an optional reason
 
@@ -113,76 +114,76 @@ class AdminAPI(Resource):
         """
         headers = {'X-Reason': reason} if reason else {}
 
-        self._api_delete(
+        await self._api_delete(
             '/api/connections/{0}'.format(
-                urllib.parse.quote_plus(name)
+                urllib.parse.quote(name)
             ),
             headers=headers,
         )
 
-    def list_connection_channels(self, name):
+    async def list_connection_channels(self, name):
         """
         List of all channels for a given connection.
 
         :param name: The connection name
         :type name: str
         """
-        return self._api_get('/api/connections/{0}/channels'.format(
-            urllib.parse.quote_plus(name)
+        return await self._api_get('/api/connections/{0}/channels'.format(
+            urllib.parse.quote(name)
         ))
 
-    def list_channels(self):
+    async def list_channels(self):
         """
         A list of all open channels.
         """
-        return self._api_get('/api/channels')
+        return await self._api_get('/api/channels')
 
-    def get_channel(self, name):
+    async def get_channel(self, name):
         """
         Details about an individual channel.
 
         :param name: The channel name
         :type name: str
         """
-        return self._api_get('/api/channels/{0}'.format(
-            urllib.parse.quote_plus(name)
+        return await self._api_get('/api/channels/{0}/'.format(
+            urllib.parse.quote(name)
         ))
 
-    def list_consumers(self):
+    async def list_consumers(self):
         """
         A list of all consumers.
         """
-        return self._api_get('/api/consumers')
+        return await self._api_get('/api/consumers')
 
-    def list_consumers_for_vhost(self, vhost):
+    async def list_consumers_for_vhost(self, vhost):
         """
         A list of all consumers in a given virtual host.
 
         :param vhost: The vhost name
         :type vhost: str
         """
-        return self._api_get('/api/consumers/{0}'.format(
+        return await self._api_get('/api/consumers/{0}/'.format(
             urllib.parse.quote_plus(vhost)
         ))
 
-    def list_exchanges(self):
+    async def list_exchanges(self):
         """
         A list of all exchanges.
         """
-        return self._api_get('/api/exchanges')
+        return await self._api_get('/api/exchanges')
 
-    def list_exchanges_for_vhost(self, vhost):
+    async def list_exchanges_for_vhost(self, vhost):
         """
         A list of all exchanges in a given virtual host.
 
         :param vhost: The vhost name
         :type vhost: str
         """
-        return self._api_get('/api/exchanges/{0}'.format(
+        return await self._api_get('/api/exchanges/{0}/'.format(
             urllib.parse.quote_plus(vhost)
         ))
 
-    def get_exchange_for_vhost(self, exchange, vhost):
+    async def get_exchange_for_vhost(self, exchange, vhost):
         """
         An individual exchange
 
@@ -192,12 +193,12 @@ class AdminAPI(Resource):
         :param vhost: The vhost name
         :type vhost: str
         """
-        return self._api_get('/api/exchanges/{0}/{1}'.format(
+        return await self._api_get('/api/exchanges/{0}/{1}'.format(
             urllib.parse.quote_plus(vhost),
             urllib.parse.quote_plus(exchange)
         ))
 
-    def create_exchange_for_vhost(self, exchange, vhost, body):
+    async def create_exchange_for_vhost(self, exchange, vhost, body):
         """
         Create an individual exchange.
         The body should look like:
@@ -222,14 +223,14 @@ class AdminAPI(Resource):
         :param body: A body for the exchange.
         :type body: dict
         """
-        self._api_put(
-            '/api/exchanges/{0}/{1}'.format(
+        await self._api_put(
+            '/api/exchanges/{0}/{1}/'.format(
                 urllib.parse.quote_plus(vhost),
                 urllib.parse.quote_plus(exchange)),
             data=body
         )
 
-    def delete_exchange_for_vhost(self, exchange, vhost, if_unused=False):
+    async def delete_exchange_for_vhost(self, exchange, vhost, if_unused=False):
         """
         Delete an individual exchange. You can add the parameter
         ``if_unused=True``. This prevents the delete from succeeding if the
@@ -244,61 +245,61 @@ class AdminAPI(Resource):
         :param if_unused: Set to ``True`` to only delete if it is unused
         :type if_unused: bool
         """
-        self._api_delete(
+        await self._api_delete(
             '/api/exchanges/{0}/{1}'.format(
                 urllib.parse.quote_plus(vhost),
                 urllib.parse.quote_plus(exchange)),
             params={
-                'if-unused': if_unused
+                'if-unused': str(if_unused)
             },
         )
 
-    def list_bindings(self):
+    async def list_bindings(self):
         """
         A list of all bindings.
         """
-        return self._api_get('/api/bindings')
+        return await self._api_get('/api/bindings')
 
-    def list_bindings_for_vhost(self, vhost):
+    async def list_bindings_for_vhost(self, vhost):
         """
         A list of all bindings in a given virtual host.
 
         :param vhost: The vhost name
         :type vhost: str
         """
-        return self._api_get('/api/bindings/{}'.format(
+        return await self._api_get('/api/bindings/{}'.format(
             urllib.parse.quote_plus(vhost)
         ))
 
-    def list_vhosts(self):
+    async def list_vhosts(self):
         """
         A list of all vhosts.
         """
-        return self._api_get('/api/vhosts')
+        return await self._api_get('/api/vhosts')
 
-    def get_vhost(self, name):
+    async def get_vhost(self, name):
         """
         Details about an individual vhost.
 
         :param name: The vhost name
         :type name: str
         """
-        return self._api_get('/api/vhosts/{0}'.format(
+        return await self._api_get('/api/vhosts/{0}'.format(
             urllib.parse.quote_plus(name)
         ))
 
-    def delete_vhost(self, name):
+    async def delete_vhost(self, name):
         """
         Delete a vhost.
 
         :param name: The vhost name
         :type name: str
         """
-        self._api_delete('/api/vhosts/{0}'.format(
+        await self._api_delete('/api/vhosts/{0}'.format(
             urllib.parse.quote_plus(name)
         ))
 
-    def create_vhost(self, name, tracing=False):
+    async def create_vhost(self, name, tracing=False):
         """
         Create an individual vhost.
 
@@ -309,40 +310,40 @@ class AdminAPI(Resource):
         :type tracing: bool
         """
         data = {'tracing': True} if tracing else {}
-        self._api_put(
+        await self._api_put(
             '/api/vhosts/{0}'.format(urllib.parse.quote_plus(name)),
             data=data,
         )
 
-    def list_users(self):
+    async def list_users(self):
         """
         A list of all users.
         """
-        return self._api_get('/api/users')
+        return await self._api_get('/api/users')
 
-    def get_user(self, name):
+    async def get_user(self, name):
         """
         Details about an individual user.
 
         :param name: The user's name
         :type name: str
         """
-        return self._api_get('/api/users/{0}'.format(
+        return await self._api_get('/api/users/{0}'.format(
             urllib.parse.quote_plus(name)
         ))
 
-    def delete_user(self, name):
+    async def delete_user(self, name):
         """
         Delete a user.
 
         :param name: The user's name
         :type name: str
         """
-        self._api_delete('/api/users/{0}'.format(
+        await self._api_delete('/api/users/{0}'.format(
             urllib.parse.quote_plus(name)
         ))
 
-    def create_user(self, name, password, password_hash=None, tags=None):
+    async def create_user(self, name, password, password_hash=None, tags=None):
         """
         Create a user
 
@@ -368,35 +369,35 @@ class AdminAPI(Resource):
         else:
             data['password_hash'] = ""
 
-        self._api_put(
+        await self._api_put(
             '/api/users/{0}'.format(urllib.parse.quote_plus(name)),
             data=data,
         )
 
-    def list_user_permissions(self, name):
+    async def list_user_permissions(self, name):
         """
         A list of all permissions for a given user.
 
         :param name: The user's name
         :type name: str
         """
-        return self._api_get('/api/users/{0}/permissions'.format(
+        return await self._api_get('/api/users/{0}/permissions'.format(
             urllib.parse.quote_plus(name)
         ))
 
-    def whoami(self):
+    async def whoami(self):
         """
         Details of the currently authenticated user.
         """
-        return self._api_get('/api/whoami')
+        return await self._api_get('/api/whoami')
 
-    def list_permissions(self):
+    async def list_permissions(self):
         """
         A list of all permissions for all users.
         """
-        return self._api_get('/api/permissions')
+        return await self._api_get('/api/permissions')
 
-    def get_user_permission(self, vhost, name):
+    async def get_user_permission(self, vhost, name):
         """
         An individual permission of a user and virtual host.
 
@@ -406,12 +407,12 @@ class AdminAPI(Resource):
         :param name: The user's name
         :type name: str
         """
-        return self._api_get('/api/permissions/{0}/{1}'.format(
+        return await self._api_get('/api/permissions/{0}/{1}'.format(
             urllib.parse.quote_plus(vhost),
             urllib.parse.quote_plus(name)
         ))
 
-    def delete_user_permission(self, name, vhost):
+    async def delete_user_permission(self, name, vhost):
         """
         Delete an individual permission of a user and virtual host.
 
@@ -421,17 +422,16 @@ class AdminAPI(Resource):
         :param vhost: The vhost name
         :type vhost: str
         """
-        self._api_delete('/api/permissions/{0}/{1}'.format(
+        await self._api_delete('/api/permissions/{0}/{1}'.format(
             urllib.parse.quote_plus(vhost),
             urllib.parse.quote_plus(name)
         ))
 
-    def create_user_permission(self,
-                               name,
-                               vhost,
-                               configure=None,
-                               write=None,
-                               read=None):
+    async def create_user_permission(
+            self, name, vhost,
+            configure=None,
+            write=None,
+            read=None):
         """
         Create a user permission
         :param name: The user's name
@@ -451,7 +451,7 @@ class AdminAPI(Resource):
             'write': write or '.*',
             'read': read or '.*',
         }
-        self._api_put(
+        await self._api_put(
             '/api/permissions/{0}/{1}'.format(
                 urllib.parse.quote_plus(vhost),
                 urllib.parse.quote_plus(name)
@@ -459,21 +459,21 @@ class AdminAPI(Resource):
             data=data
         )
 
-    def list_policies(self):
+    async def list_policies(self):
         """
         A list of all policies
         """
-        return self._api_get('/api/policies')
+        return await self._api_get('/api/policies')
 
-    def list_policies_for_vhost(self, vhost):
+    async def list_policies_for_vhost(self, vhost):
         """
         A list of all policies for a vhost.
         """
-        return self._api_get('/api/policies/{0}'.format(
+        return await self._api_get('/api/policies/{0}'.format(
             urllib.parse.quote_plus(vhost)
         ))
 
-    def get_policy_for_vhost(self, vhost, name):
+    async def get_policy_for_vhost(self, vhost, name):
         """
         Get a specific policy for a vhost.
 
@@ -482,12 +482,12 @@ class AdminAPI(Resource):
         :param name: The name of the policy
         :type name: str
         """
-        return self._api_get('/api/policies/{0}/{1}'.format(
+        return await self._api_get('/api/policies/{0}/{1}'.format(
             urllib.parse.quote_plus(vhost),
             urllib.parse.quote_plus(name),
         ))
 
-    def create_policy_for_vhost(
+    async def create_policy_for_vhost(
             self, vhost, name,
             definition,
             pattern=None,
@@ -528,7 +528,7 @@ class AdminAPI(Resource):
             "priority": priority,
             "apply-to": apply_to
         }
-        self._api_put(
+        await self._api_put(
             '/api/policies/{0}/{1}'.format(
                 urllib.parse.quote_plus(vhost),
                 urllib.parse.quote_plus(name),
@@ -536,7 +536,7 @@ class AdminAPI(Resource):
             data=data,
         )
 
-    def delete_policy_for_vhost(self, vhost, name):
+    async def delete_policy_for_vhost(self, vhost, name):
         """
         Delete a specific policy for a vhost.
 
@@ -545,12 +545,12 @@ class AdminAPI(Resource):
         :param name: The name of the policy
         :type name: str
         """
-        self._api_delete('/api/policies/{0}/{1}/'.format(
+        await self._api_delete('/api/policies/{0}/{1}/'.format(
             urllib.parse.quote_plus(vhost),
             urllib.parse.quote_plus(name),
         ))
 
-    def is_vhost_alive(self, vhost):
+    async def is_vhost_alive(self, vhost):
         """
         Declares a test queue, then publishes and consumes a message.
         Intended for use by monitoring tools.
@@ -558,6 +558,6 @@ class AdminAPI(Resource):
         :param vhost: The vhost name to check
         :type vhost: str
         """
-        return self._api_get('/api/aliveness-test/{0}'.format(
+        return await self._api_get('/api/aliveness-test/{0}'.format(
             urllib.parse.quote_plus(vhost)
         ))

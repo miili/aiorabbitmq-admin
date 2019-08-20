@@ -1,35 +1,36 @@
-.. image:: https://travis-ci.org/ambitioninc/rabbitmq-admin.svg?branch=master
-    :target: https://travis-ci.org/ambitioninc/rabbitmq-admin
-
-.. image:: https://coveralls.io/repos/ambitioninc/rabbitmq-admin/badge.png?branch=master
-    :target: https://coveralls.io/r/ambitioninc/rabbitmq-admin?branch=master
-
-
-rabbitmq-admin
-==============
-This project is a python wrapper around the RabbitMQ Management HTTP API.
+aiorabbitmq-admin
+=================
+An asynchronous python wrapper around the RabbitMQ Management HTTP API based on [aiohttp](https://docs.aiohttp.org).
+This project is forked from [rabbitmq-admin](https://github.com/ambitioninc/rabbitmq-admin). Thanks to Micah Hausler!
 
 
 Example
 -------
-::
 
-    >>> from rabbitmq_admin import AdminAPI
-    >>> api = AdminAPI(url='http://192.168.99.100:15672', auth=('guest', 'guest'))
-    >>> api.create_vhost('second_vhost')
-    >>> api.create_user('second_user', 'password')
-    >>> api.create_user_permission('second_user', 'second_vhost')
-    >>> api.list_permission()
-    [{'configure': '.*',
-      'read': '.*',
-      'user': 'guest',
-      'vhost': '/',
-      'write': '.*'},
-     {'configure': '.*',
-      'read': '.*',
-      'user': 'second_user',
-      'vhost': 'second_vhost',
-      'write': '.*'}]
+```python
+>>> import asyncio
+>>> from rabbitmq_admin import AdminAPI
+>>> api = AdminAPI(url='http://192.168.99.100:15672', auth=('guest', 'guest'))
+>>>
+>>> async def my_commands():
+>>>   api.create_vhost('second_vhost')
+>>>   api.create_user('second_user', 'password')
+>>>   api.create_user_permission('second_user', 'second_vhost')
+>>>   print(api.list_permission())
+>>>
+>>> loop = asyncio.get_event_loop()
+>>> loop.run_until_complete(my_commands())
+[{'configure': '.*',
+  'read': '.*',
+  'user': 'guest',
+  'vhost': '/',
+  'write': '.*'},
+ {'configure': '.*',
+  'read': '.*',
+  'user': 'second_user',
+  'vhost': 'second_vhost',
+  'write': '.*'}]
+```
 
 Unsupported Management API endpoints
 ------------------------------------
@@ -54,17 +55,16 @@ these, but pull requests implementing them are welcome.
 
 Installation
 ------------
-To install the latest release, type::
 
-    pip install rabbitmq-admin
+To install the latest code directly from source, type:
 
-To install the latest code directly from source, type::
-
-    pip install git+git://github.com/ambitioninc/rabbitmq-admin.git
+```bash
+pip3 install git+https://github.com/miili/aiorabbitmq-admin.git
+```
 
 Documentation
 -------------
-Full documentation is available at http://rabbitmq-admin.readthedocs.org
+This project is forked from `rabbitmq-admin`. Full documentation is available at http://rabbitmq-admin.readthedocs.org
 
 License
 -------

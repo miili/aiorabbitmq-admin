@@ -9,23 +9,25 @@ def get_version():
     """
     Extracts the version number from the version.py file.
     """
-    VERSION_FILE = 'rabbitmq_admin/version.py'
+    VERSION_FILE = 'aiorabbitmq_admin/version.py'
     mo = re.search(r'^__version__ = [\'"]([^\'"]*)[\'"]', open(VERSION_FILE, 'rt').read(), re.M)
     if mo:
         return mo.group(1)
     else:
         raise RuntimeError('Unable to find version string in {0}.'.format(VERSION_FILE))
 
+
 install_requires = [
-    'requests>=2.7.0',
-    'six>=1.8.0'
+    'aiohttp',
 ]
+
 tests_require = [
     'coverage>=4.0',
     'flake8>=2.2.0',
     'pika>=0.10.0',
     'mock>=1.0.1',
     'nose>=1.3.0']
+
 docs_require = [
     'Sphinx>=1.2.2',
     'sphinx_rtd_theme']
@@ -42,9 +44,9 @@ for deps in extras_require.values():
 extras_require['all'] = list(everything)
 
 setup(
-    name='rabbitmq-admin',
+    name='aiorabbitmq-admin',
     version=get_version(),
-    description='A python interface for the RabbitMQ Admin HTTP API',
+    description='Asynchronous python interface for the RabbitMQ Admin HTTP API',
     long_description=open('README.rst').read(),
     url='https://github.com/ambitioninc/rabbitmq-admin',
     author='Micah Hausler',
@@ -52,8 +54,6 @@ setup(
     keywords='RabbitMQ, AMQP, admin',
     packages=find_packages(),
     classifiers=[
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
