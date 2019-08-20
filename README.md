@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/miili/aiorabbitmq-admin.svg?branch=master)](https://travis-ci.org/miili/aiorabbitmq-admin)
+
 aiorabbitmq-admin
 =================
 An asynchronous python wrapper around the RabbitMQ Management HTTP API based on [aiohttp](https://docs.aiohttp.org).
